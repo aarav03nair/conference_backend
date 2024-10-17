@@ -7,7 +7,11 @@ const Slot = require('./models/Slot');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  origin: ['https://vercel.live/link/conference-dental.vercel.app?via=project-dashboard-alias-list&p=1'],
+  method :['POST','GET'],
+  credentials:true
+}));
 
 mongoose.connect('mongodb://localhost:27017/conference', {
   useNewUrlParser: true,
