@@ -8,7 +8,7 @@ const Slot = require('./models/Slot');
 const app = express();
 app.use(bodyParser.json());
 app.use(cors({
-  origin: ['https://vercel.live/link/conference-dental.vercel.app?via=project-dashboard-alias-list&p=1'],
+  origin: ['https://vercel.live/link/conference-dental.vercel.app'],
   method :['POST','GET'],
   credentials:true
 }));
