@@ -12,6 +12,7 @@ app.use(cors({
   method :['POST','GET'],
   credentials:true
 }));
+app.options('*', cors());  // Allow preflight requests for all routes
 
 mongoose.connect('mongodb://localhost:27017/conference', {
   useNewUrlParser: true,
