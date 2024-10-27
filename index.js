@@ -7,10 +7,15 @@ const Slot = require('./models/Slot');
 
 const app = express();
 app.use(bodyParser.json());
-const corsOptions = {
-  origin: '*', // Allow requests from any origin
-};
-app.use(cors(corsOptions));
+const allowedOrigins = [
+  'https://conference-dental-dtsnuaf7m-aarav03nairs-projects.vercel.app',
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // if you need to pass cookies or authorization headers
+}));
   // {
 //   origin: ['https://vercel.live/link/conference-dental.vercel.app?via=project-dashboard-alias-list&p=1'],
 //   method :['POST','GET'],
