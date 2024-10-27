@@ -16,6 +16,12 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // if you need to pass cookies or authorization headers
 }));
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://example.com");
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  next();
+})
   // {
 //   origin: ['https://vercel.live/link/conference-dental.vercel.app?via=project-dashboard-alias-list&p=1'],
 //   method :['POST','GET'],
