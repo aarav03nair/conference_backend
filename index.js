@@ -23,7 +23,7 @@ app.use(cors({
 // }));
 // app.opt ions('*', cors());  // Allow preflight requests for all routes
 
-mongoose.connect('mongodb://localhost:27017/conference', {
+mongoose.connect('mongodb+srv://aarav03nair:conf123@cluster0.v9bpk.mongodb.net/conference?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
