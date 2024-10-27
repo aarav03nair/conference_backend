@@ -7,18 +7,30 @@ const Slot = require('./models/Slot');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors({
-  origin: ['https://vercel.live/link/conference-dental.vercel.app?via=project-dashboard-alias-list&p=1'],
-  method :['POST','GET'],
-  credentials:true
-}));
-app.options('*', cors());  // Allow preflight requests for all routes
+const corsOptions = {
+  origin: '*', // Allow requests from any origin
+};
+app.use(cors(corsOptions));
+  // {
+//   origin: ['https://vercel.live/link/conference-dental.vercel.app?via=project-dashboard-alias-list&p=1'],
+//   method :['POST','GET'],
+//   credentials:true
+// }));
+// app.opt ions('*', cors());  // Allow preflight requests for all routes
 
 mongoose.connect('mongodb://localhost:27017/conference', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await User.find().populate('bookedSlots'); // Populate slot details if needed
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Error retrieving users.' });
+  }
+});
 // Login endpoint
 app.post('/api/login', async (req, res) => {
     console.log("login tried");
@@ -27,8 +39,9 @@ app.post('/api/login', async (req, res) => {
   console.log(user);
 
   if (!user) {
-    user = new User({ registrationNumber, bookedSlots: [] });
-    await user.save();
+    // user = new User({ registrationNumber, bookedSlots: [] });
+    // await user.save();
+    return res.status(400).send('user id not valid');
   }
 
   res.json(user);
@@ -57,6 +70,28 @@ app.post('/api/user-slot-info',async(req, res)=>{
     console.log(err);
   }
 })
+app.post('/api/clear-user-slots', async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const user = await User.findOne({registrationNumber:userId}).populate('bookedSlots');
+    console.log(user);
+
+    if (user && user.bookedSlots) {
+      // Update bookedCount of slots
+      for (let slot of user.bookedSlots) {
+        slot.bookedCount = Math.max(slot.bookedCount - 1, 0);
+        await slot.save();
+      }
+
+      // Clear bookedSlots array in user
+      user.bookedSlots = [];
+      await user.save();
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 // Book slots
 app.post('/api/book-slot', async (req, res) => {

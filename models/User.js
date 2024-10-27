@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   registrationNumber: String,
+  name:String,
   bookedSlots: [{
     type: mongoose.Schema.Types.ObjectId,  // Assuming slots are stored as ObjectIds in MongoDB
     ref: 'Slot'  // Referencing the Slot model
