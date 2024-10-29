@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const User = require('./models/User');
 const Slot = require('./models/Slot');
+const nodemailer = require('nodemailer');
+
 
 const app = express();
 app.use(bodyParser.json());
@@ -93,11 +95,31 @@ app.post('/api/clear-user-slots', async (req, res) => {
         slot.bookedCount = Math.max(slot.bookedCount - 1, 0);
         await slot.save();
       }
-
+      const prevBookedSlots = user.bookedSlots;
       // Clear bookedSlots array in user
       user.bookedSlots = [];
       await user.save();
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail', // use your email service
+        auth: {
+          user: 'isddexperiencezone@gmail.com',
+          pass: 'pxbq lvsf eubq avlt',
+        },
+      });
+    
+      const mailOptions = {
+        from: 'isddexperiencezone@gmail.com',
+        to:'isddexperiencezone@gmail.com',
+        subject: 'Slot cleared info',
+        text: `RegNo: ${userId}
+        ${prevBookedSlots}`,
+      };
+    
+      await transporter.sendMail(mailOptions);
     }
+
+
     res.json({ success: true });
   } catch (err) {
     res.status(500).json(err);
@@ -106,7 +128,14 @@ app.post('/api/clear-user-slots', async (req, res) => {
 
 // Book slots
 app.post('/api/book-slot', async (req, res) => {
-  const { RegNo, selectedSlots } = req.body;
+  // const { RegNo, selectedSlots } = req.body;
+  const { RegNo, selectedSlots, email } = req.body;
+
+  // Validate email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    return res.status(400).send('Please provide a valid email address.');
+  }
 
     console.log(RegNo);
   // const user = await User.findById(userId);
@@ -146,6 +175,26 @@ console.log(slot2._id);
 console.log(bookedslot);
   user.bookedSlots.push(slot1._id, slot2._id);
   await user.save();
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // use your email service
+    auth: {
+      user: 'isddexperiencezone@gmail.com',
+      pass: 'pxbq lvsf eubq avlt',
+    },
+  });
+
+  const mailOptions = {
+    from: 'isddexperiencezone@gmail.com',
+    to: email,
+    subject: 'Slot Booking Confirmation',
+    text: `Your slots have been successfully booked. Details:
+    Slot 1: Day ${slot1.day}, Room ${slot1.room}, Time ${slot1.time}
+    Slot 2: Day ${slot2.day}, Room ${slot2.room}, Time ${slot2.time}
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
 
   res.send({ success: true });
 });
