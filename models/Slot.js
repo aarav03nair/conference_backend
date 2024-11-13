@@ -5,8 +5,10 @@ const slotSchema = new mongoose.Schema({
   room: String,
   time: String,
   capacity: Number,
-  
   bookedCount: Number,
+  
+  topic: String,
+  speakerName: String,
 });
 
 module.exports = mongoose.model('Slot', slotSchema);

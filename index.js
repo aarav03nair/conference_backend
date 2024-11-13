@@ -47,14 +47,14 @@ app.get('/api/users', async (req, res) => {
 // Login endpoint
 app.post('/api/login', async (req, res) => {
     console.log("login tried");
-  const { registrationNumber } = req.body;
-  let user = await User.findOne({ registrationNumber });
+  const { registrationNumber , phoneNumber } = req.body;
+  let user = await User.findOne({ registrationNumber , phoneNumber });
   console.log(user);
 
   if (!user) {
     // user = new User({ registrationNumber, bookedSlots: [] });
     // await user.save();
-    return res.status(400).send('user id not valid');
+    return res.status(400).send('user id or number not valid');
   }
 
   res.json(user);
