@@ -36,6 +36,25 @@ mongoose.connect('mongodb+srv://aarav03nair:conf123@cluster0.v9bpk.mongodb.net/c
   useUnifiedTopology: true,
 });
 
+
+// Route to get users who booked a specific slot
+app.post('/api/getUsersBySlot', async (req, res) => {
+  const { day, room, time } = req.body;
+
+  // Find the slot ID that matches the selected day, hall, and time
+  const slot = await Slot.findOne({ day, room, time });
+
+  if (!slot) {
+    return res.status(404).send('No slot found for the selected criteria');
+  }
+
+  // Find users who booked the selected slot ID
+  const users = await User.find({ bookedSlots: slot._id });
+  res.json(users);
+});
+
+
+
 app.get('/api/users', async (req, res) => {
   try {
     const users = await User.find().populate('bookedSlots'); // Populate slot details if needed
