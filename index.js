@@ -46,19 +46,33 @@ app.get('/api/users', async (req, res) => {
 });
 // Login endpoint
 app.post('/api/login', async (req, res) => {
-    console.log("login tried");
-  const { registrationNumber , phoneNumber } = req.body;
-  let user = await User.findOne({ registrationNumber , phoneNumber });
-  console.log(user);
+  console.log("Login attempt");
+
+  const { registrationNumber, phoneNumber } = req.body;
+  
+  // Find user by registration number
+  let user = await User.findOne({ registrationNumber });
 
   if (!user) {
-    // user = new User({ registrationNumber, bookedSlots: [] });
-    // await user.save();
-    return res.status(400).send('user id or number not valid');
+      // If no user is found with the provided registration number
+      return res.status(400).send('Registration number or phone number is incorrect');
   }
 
+  // If the user exists but phoneNumber is not provided in the database
+  if (!user.phoneNumber) {
+    // console.alert("please contact 9850575877 for this")
+      return res.status(402).send('Phone number not provided for this registration number. please contact 9850575877 for this');
+  }
+
+  // If the user exists but phone number does not match
+  if (user.phoneNumber !== phoneNumber) {
+      return res.status(400).send('Registration number or phone number is incorrect');
+  }
+
+  // If both registration number and phone number match
   res.json(user);
 });
+
 
 // Get available slots
 app.get('/api/slots', async (req, res) => {
@@ -188,9 +202,13 @@ console.log(bookedslot);
     from: 'isddexperiencezone@gmail.com',
     to: email,
     subject: 'Slot Booking Confirmation',
-    text: `Your slots have been successfully booked. Details:
-    Slot 1: Day ${slot1.day}, Room ${slot1.room}, Time ${slot1.time}
-    Slot 2: Day ${slot2.day}, Room ${slot2.room}, Time ${slot2.time}
+    text: `Thankyou for registering for the ISDD Experience zone. Your bookings are as follows:
+    Slot 1: ${slot1.day},  Room ${slot1.room}, Time ${slot1.time}
+      Name: ${slot1.topic}
+    Slot 2: ${slot2.day},  Room ${slot2.room}, Time ${slot2.time}
+      Name: ${slot2.topic}
+
+    Please assemble at the assigned Hall 15mins before the scheduled time and show this email for confirmation.
     `,
   };
 
