@@ -193,7 +193,7 @@ app.post('/api/book-slot', async (req, res) => {
     return res.status(400).send('Slots cannot be at the same time on the same day.');
   }
 console.log("hello");
-  if (slot1.bookedCount >= 20 || slot2.bookedCount >= 20) {
+  if (slot1.bookedCount >= 15 || slot2.bookedCount >= 15) {
     return res.status(400).send('One of the slots is already full.');
   }
   const bookedslot = user.bookedSlots;
